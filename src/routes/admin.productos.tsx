@@ -57,7 +57,7 @@ function AdminProductsList() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-4">
-      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
+      <div className="flex flex-col gap-3 sm:grid sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
         <div className="relative min-w-0">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -68,7 +68,7 @@ function AdminProductsList() {
             aria-label="Buscar producto"
           />
         </div>
-        <Button asChild className="shrink-0">
+        <Button asChild className="w-full shrink-0 sm:w-auto">
           <Link to="/admin" search={{ editar: undefined }}>
             <Plus className="h-4 w-4" />
             Nuevo producto

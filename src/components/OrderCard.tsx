@@ -25,7 +25,7 @@ export function OrderCard({ order, role }: { order: Order; role: "customer" | "a
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
         <div className="min-w-0">
           <p className="font-display text-lg font-bold">Pedido #{order.id}</p>
-          <p className="text-xs text-muted-foreground">
+          <p className="break-all text-xs text-muted-foreground">
             {new Date(order.created_at).toLocaleString("es-CO")} · Ref {order.reference}
           </p>
         </div>

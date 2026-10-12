@@ -57,7 +57,7 @@ function Stat({
         {label}
       </div>
       <p
-        className={`mt-2 font-display text-2xl font-extrabold ${accent ? "text-secondary" : ""}`}
+        className={`mt-2 break-words font-display text-2xl font-extrabold ${accent ? "text-secondary" : ""}`}
       >
         {value}
       </p>
@@ -117,7 +117,7 @@ function AdminSales() {
           <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
             Desglose por periodo
           </h2>
-          <div className="flex gap-1 rounded-full bg-muted p-1">
+          <div className="flex max-w-full flex-wrap gap-1 rounded-full bg-muted p-1">
             {ranges.map((r) => (
               <button
                 key={r.key}
@@ -164,18 +164,18 @@ function AdminSales() {
                       style={{ width: `${(p.revenue / maxRevenue) * 100}%` }}
                     />
                   </div>
-                  <div className="mt-3 grid grid-cols-3 gap-2 text-sm">
-                    <div>
+                  <div className="mt-3 grid grid-cols-1 gap-2 text-sm min-[420px]:grid-cols-3">
+                    <div className="min-w-0">
                       <p className="text-xs text-muted-foreground">Ventas</p>
-                      <p className="font-semibold">{formatCOP(p.revenue)}</p>
+                      <p className="break-words font-semibold">{formatCOP(p.revenue)}</p>
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <p className="text-xs text-muted-foreground">Costo</p>
-                      <p className="font-semibold">{formatCOP(p.cost)}</p>
+                      <p className="break-words font-semibold">{formatCOP(p.cost)}</p>
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <p className="text-xs text-muted-foreground">Ganancia</p>
-                      <p className="font-semibold text-secondary">{formatCOP(p.profit)}</p>
+                      <p className="break-words font-semibold text-secondary">{formatCOP(p.profit)}</p>
                     </div>
                   </div>
                   {p.items_without_cost > 0 && (
