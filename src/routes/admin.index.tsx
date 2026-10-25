@@ -501,14 +501,14 @@ function AdminProducts() {
                             {c ? c.label : "Fotos generales"}
                           </p>
                         </div>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="grid grid-cols-4 gap-2 sm:grid-cols-5">
                           {pending.map((item, i) =>
                             item.color === color ? (
                               <div key={i} className="relative">
                                 <img
                                   src={URL.createObjectURL(item.file)}
                                   alt={`Foto ${i + 1}`}
-                                  className="h-16 w-16 rounded-lg border border-border object-cover"
+                                  className="aspect-square w-full rounded-lg border border-border object-cover"
                                 />
                                 <button
                                   type="button"
@@ -534,7 +534,7 @@ function AdminProducts() {
                   {(editingFresh.images ?? []).some((i) => !i.color) && (
                     <div className="space-y-2 rounded-xl border border-border p-3">
                       <p className="text-sm font-semibold">Fotos que sirven para todos los colores</p>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="grid grid-cols-4 gap-2 sm:grid-cols-5">
                         {(editingFresh.images ?? [])
                           .filter((i) => !i.color)
                           .sort((a, b) => a.position - b.position)
@@ -543,7 +543,7 @@ function AdminProducts() {
                               <img
                                 src={img.image_url}
                                 alt=""
-                                className="h-14 w-14 rounded-lg border border-border object-cover"
+                                className="aspect-square w-full rounded-lg border border-border object-cover"
                               />
                               <ConfirmDialog
                                 trigger={
@@ -607,19 +607,19 @@ function AdminProducts() {
                 Quedan {ask.length - 1} foto(s) más por asignar.
               </p>
             )}
-            <div className="flex flex-wrap justify-center gap-3">
+            <div className="grid grid-cols-4 gap-x-2 gap-y-3 sm:grid-cols-5">
               {(palette ?? []).map((c) => (
                 <button
                   key={c.value}
                   type="button"
                   onClick={() => assignColor(c.value)}
-                  className="flex w-16 flex-col items-center gap-1 text-center"
+                  className="flex min-w-0 flex-col items-center gap-1 text-center"
                 >
                   <span
                     style={{ backgroundColor: c.hex }}
                     className="h-10 w-10 rounded-full border border-border transition hover:ring-2 hover:ring-foreground hover:ring-offset-2 hover:ring-offset-background"
                   />
-                  <span className="text-[11px] leading-tight text-muted-foreground">{c.label}</span>
+                  <span className="w-full truncate text-[11px] leading-tight text-muted-foreground">{c.label}</span>
                 </button>
               ))}
             </div>
@@ -718,16 +718,16 @@ function PhotoBox({
       {note && <p className="text-xs text-muted-foreground">{note}</p>}
 
       {images.length > 0 && (
-        <div className="flex flex-wrap gap-2">
+        <div className="grid grid-cols-4 gap-2 sm:grid-cols-5">
           {images
             .slice()
             .sort((a, b) => a.position - b.position)
             .map((img) => (
-              <span key={img.id} className="relative">
+              <span key={img.id} className="relative min-w-0">
                 <img
                   src={img.image_url}
                   alt=""
-                  className="h-14 w-14 rounded-lg border border-border object-cover"
+                  className="aspect-square w-full rounded-lg border border-border object-cover"
                 />
                 <ConfirmDialog
                   trigger={

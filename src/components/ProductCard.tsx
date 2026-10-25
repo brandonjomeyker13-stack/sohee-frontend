@@ -1,8 +1,13 @@
 import { Link } from "@tanstack/react-router";
 import { formatCOP, type Product } from "@/lib/api";
-import { ImageOff } from "lucide-react";
+import { NoImage } from "@/components/NoImage";
+
+function productThumb(product: Product) {
+  return product.image_url || product.images?.[0]?.image_url || null;
+}
 
 export function ProductCard({ product }: { product: Product }) {
+  const thumb = productThumb(product);
   return (
     <Link
       to="/producto/$productId"
@@ -10,17 +15,15 @@ export function ProductCard({ product }: { product: Product }) {
       className="group flex flex-col overflow-hidden rounded-xl border border-transparent bg-card transition-all duration-200 hover:border-border hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
     >
       <div className="relative aspect-square overflow-hidden rounded-xl bg-muted">
-        {product.image_url ? (
+        {thumb ? (
           <img
-            src={product.image_url}
+            src={thumb}
             alt={product.name}
             loading="lazy"
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
           />
         ) : (
-          <div className="grid h-full w-full place-items-center text-muted-foreground">
-            <ImageOff className="h-8 w-8" aria-hidden="true" />
-          </div>
+          <NoImage />
         )}
       </div>
       <div className="flex flex-col gap-0.5 px-1 py-3">

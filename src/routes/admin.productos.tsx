@@ -2,13 +2,14 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Download, ImageOff, Pencil, Plus, Search, Trash2 } from "lucide-react";
+import { Download, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { deleteProduct, exportCatalog, formatCOP, getProducts, type Product } from "@/lib/api";
 import { fuzzyFilter } from "@/lib/fuzzy";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { NoImage } from "@/components/NoImage";
 
 export const Route = createFileRoute("/admin/productos")({
   head: () => ({
@@ -137,12 +138,10 @@ function AdminProductsList() {
                   className="flex items-center gap-3 rounded-xl border border-border bg-card p-2.5"
                 >
                   <div className="h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-muted">
-                    {p.image_url ? (
-                      <img src={p.image_url} alt={p.name} className="h-full w-full object-cover" />
+                    {p.image_url || p.images?.[0]?.image_url ? (
+                      <img src={p.image_url || p.images![0]!.image_url} alt={p.name} className="h-full w-full object-cover" />
                     ) : (
-                      <div className="grid h-full place-items-center text-muted-foreground">
-                        <ImageOff className="h-5 w-5" />
-                      </div>
+                      <NoImage compact />
                     )}
                   </div>
                   <div className="min-w-0 flex-1">

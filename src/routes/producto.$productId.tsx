@@ -2,7 +2,8 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
-import { ImageOff, Minus, Plus, ShoppingCart, ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
+import { Minus, Plus, ShoppingCart, ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
+import { NoImage } from "@/components/NoImage";
 import { addToCart, formatCOP, getCart, getProduct } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { Header } from "@/components/Header";
@@ -112,7 +113,7 @@ function ProductPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="mx-auto max-w-5xl px-4 py-6">
+      <main className="mx-auto max-w-5xl overflow-x-hidden px-4 py-6">
         <Link to="/" className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-4 w-4" /> Volver al catálogo
         </Link>
@@ -120,8 +121,8 @@ function ProductPage() {
         {isLoading || !product ? (
           <Skeleton className="h-96 w-full rounded-xl" />
         ) : (
-          <div className="card-surface grid gap-6 p-4 md:grid-cols-2 md:p-6">
-            <div className="flex flex-col gap-3">
+          <div className="card-surface grid min-w-0 gap-6 overflow-hidden p-4 md:grid-cols-2 md:p-6">
+            <div className="flex min-w-0 flex-col gap-3">
               <div className="relative aspect-square overflow-hidden rounded-lg bg-muted">
                 {current ? (
                   <img
@@ -131,9 +132,7 @@ function ProductPage() {
                     className="h-full w-full object-cover"
                   />
                 ) : (
-                  <div className="grid h-full place-items-center text-muted-foreground">
-                    <ImageOff className="h-10 w-10" />
-                  </div>
+                  <NoImage />
                 )}
                 {gallery.length > 1 && (
                   <>
@@ -158,7 +157,7 @@ function ProductPage() {
               </div>
 
               {gallery.length > 1 && (
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-4 gap-2 sm:grid-cols-5">
                   {gallery.map((url, i) => (
                     <button
                       key={url}
@@ -166,7 +165,7 @@ function ProductPage() {
                       onClick={() => setActive(i)}
                       aria-label={`Ver imagen ${i + 1}`}
                       aria-current={i === active}
-                      className={`aspect-square overflow-hidden rounded-lg border-2 transition ${
+                      className={`aspect-square min-w-0 overflow-hidden rounded-lg border-2 transition ${
                         i === active ? "border-foreground" : "border-transparent hover:border-border"
                       }`}
                     >
@@ -184,7 +183,7 @@ function ProductPage() {
                   <p className="text-sm font-medium">
                     Color{selectedLabel ? `: ${selectedLabel}` : ""}
                   </p>
-                  <div className="mt-2 flex flex-wrap gap-3">
+                  <div className="mt-2 grid grid-cols-4 gap-x-2 gap-y-3 sm:grid-cols-5">
                     {colors.map((c) => {
                       const on = c.value === selected;
                       return (
@@ -197,7 +196,7 @@ function ProductPage() {
                             setQty(1);
                             setActive(0);
                           }}
-                          className="flex w-16 flex-col items-center gap-1 text-center"
+                          className="flex min-w-0 flex-col items-center gap-1 text-center"
                         >
                           <span
                             style={{ backgroundColor: c.hex }}
@@ -207,7 +206,7 @@ function ProductPage() {
                                 : "border-border"
                             }`}
                           />
-                          <span className="text-[11px] leading-tight text-muted-foreground">
+                          <span className="w-full truncate text-[11px] leading-tight text-muted-foreground">
                             {c.label}
                           </span>
                         </button>

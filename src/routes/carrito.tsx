@@ -16,6 +16,7 @@ import {
 } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { Header } from "@/components/Header";
+import { NoImage } from "@/components/NoImage";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -139,8 +140,14 @@ function CartPage() {
               {rows.map(({ item, product }) => (
                 <li key={item.id} className="card-surface flex items-center gap-3 p-3">
                   <div className="h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-muted">
-                    {product?.image_url && (
-                      <img src={product.image_url} alt={product.name} className="h-full w-full object-cover" />
+                    {product?.image_url || product?.images?.[0]?.image_url ? (
+                      <img
+                        src={product.image_url || product.images![0]!.image_url}
+                        alt={product.name}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <NoImage compact />
                     )}
                   </div>
                   <div className="min-w-0 flex-1">

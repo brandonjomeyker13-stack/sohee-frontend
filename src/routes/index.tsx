@@ -46,9 +46,19 @@ function Index() {
   });
   const { data: categories } = useQuery({ queryKey: ["categories"], queryFn: getCategories });
 
+  const visibleCats = useMemo(() => {
+    const used = new Set(
+      (data ?? [])
+        .filter((p) => p.in_stock && p.category?.id != null)
+        .map((p) => p.category!.id),
+    );
+    return (categories ?? []).filter((c) => used.has(c.id));
+  }, [data, categories]);
+  const activeCategoryId = visibleCats.some((c) => c.id === categoryId) ? categoryId : null;
+
   const filtered = useMemo(() => {
     let list = (data ?? []).filter((p) => p.in_stock);
-    if (categoryId) list = list.filter((p) => p.category?.id === categoryId);
+    if (activeCategoryId) list = list.filter((p) => p.category?.id === activeCategoryId);
     return fuzzyFilter(list, search, (p: Product) =>
       [
         p.name,
@@ -57,7 +67,7 @@ function Index() {
         p.category?.name ?? "",
       ].join(" "),
     );
-  }, [data, search, categoryId]);
+  }, [data, search, activeCategoryId]);
 
 
 
@@ -65,8 +75,8 @@ function Index() {
     <div className="min-h-screen bg-background">
       <Header search={search} onSearch={setSearch} />
       <CategoryNav
-        categories={categories ?? []}
-        categoryId={categoryId}
+        categories={visibleCats}
+        categoryId={activeCategoryId}
         onSelect={(id) => {
           setCategoryId(id);
           document.getElementById("coleccion")?.scrollIntoView({ behavior: "smooth" });
