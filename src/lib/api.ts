@@ -148,8 +148,6 @@ export interface ProductColor {
   value: string;
   label: string;
   hex: string;
-  /** Unidades disponibles de ese color. */
-  stock?: number | null;
 }
 
 export interface Product {
@@ -157,7 +155,7 @@ export interface Product {
   name: string;
   price: string;
   cost?: string | null;
-  stock: number;
+  /** Si es false, el producto queda oculto: no se puede pedir. */
   in_stock: boolean;
   /** Alto en cm. */
   height_cm?: number | string | null;
@@ -320,9 +318,32 @@ export const getProductColors = () => api<ProductColor[]>("/products/colors");
 export const setProductColors = (id: number, colors: string[]) =>
   apiJson<Product>(`/products/${id}/colors`, "PUT", { colors }, true);
 
-/** Cambia el stock de un color concreto. Devuelve el producto con el total recalculado. */
-export const setColorStock = (id: number, color: string, stock: number) =>
-  apiJson<Product>(`/products/${id}/colors/${encodeURIComponent(color)}/stock`, "PUT", { stock }, true);
+/** Catálogo completo (admin) para llevar productos a otra tienda. */
+export interface CatalogExport {
+  exported_at: string;
+  source: string;
+  categories: { name: string }[];
+  products: {
+    name: string;
+    price: string;
+    cost?: string | null;
+    height_cm?: string | null;
+    width_cm?: string | null;
+    compartments?: number | null;
+    material?: string | null;
+    in_stock: boolean;
+    category: string;
+    colors: string[];
+    images: {
+      url: string;
+      storage_path?: string | null;
+      color?: string | null;
+      position: number;
+    }[];
+  }[];
+}
+
+export const exportCatalog = () => api<CatalogExport>("/products/export", { auth: true });
 
 /** Agrega hasta 4 imágenes a la galería del producto (campo `files` repetido). */
 export const uploadProductImages = (id: number, files: File[], color?: string | null) => {

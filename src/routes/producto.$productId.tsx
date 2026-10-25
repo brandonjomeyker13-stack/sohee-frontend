@@ -83,6 +83,10 @@ function ProductPage() {
       navigate({ to: "/auth", search: { redirect: `/producto/${productId}` } });
       return;
     }
+    if (!product?.in_stock) {
+      toast.error("Este producto no se puede pedir por ahora");
+      return;
+    }
     if (hasColors && !selected) {
       toast.error("Elige un color antes de agregar al carrito");
       return;
@@ -276,11 +280,15 @@ function ProductPage() {
               <Button
                 className="mt-6"
                 size="lg"
-                disabled={adding || (hasColors && !selected)}
+                disabled={adding || !product.in_stock || (hasColors && !selected)}
                 onClick={handleAdd}
               >
                 <ShoppingCart className="h-4 w-4" />
-                {adding ? "Agregando..." : "Agregar al carrito"}
+                {!product.in_stock
+                  ? "Por ahora no se puede pedir"
+                  : adding
+                    ? "Agregando..."
+                    : "Agregar al carrito"}
               </Button>
 
             </div>

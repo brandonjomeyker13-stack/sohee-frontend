@@ -13,13 +13,13 @@ import {
   deleteProductImage,
   getProductColors,
   setProductColors,
-  setColorStock,
   type Product,
   type ProductImage,
 } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import {
   Dialog,
   DialogContent,
@@ -29,9 +29,6 @@ import {
 } from "@/components/ui/dialog";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 
-
-/** Se trabaja por pedido: cada color queda siempre disponible. */
-const MADE_TO_ORDER_STOCK = 999;
 
 export const Route = createFileRoute("/admin/")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -58,6 +55,7 @@ const empty = {
   price: "",
   cost: "",
   category_id: "",
+  in_stock: true,
 };
 
 function AdminProducts() {
@@ -79,7 +77,7 @@ function AdminProducts() {
 
   /** Producto en edición con datos frescos del catálogo (para ver sus fotos por caja). */
   const editingFresh = editing ? (products?.find((p) => p.id === editing.id) ?? editing) : null;
-  /** Colores que ya tiene el producto en edición (cada uno con su stock). */
+  /** Colores que ya tiene el producto en edición (vienen de las fotos). */
   const editColors = editingFresh?.colors ?? [];
   const usaColores = editColors.length > 0;
 
@@ -121,7 +119,6 @@ function AdminProducts() {
         );
         if (color && !currentColors.includes(color)) currentColors.push(color);
         await setProductColors(editingFresh.id, currentColors);
-        if (color) await setColorStock(editingFresh.id, color, MADE_TO_ORDER_STOCK);
         await qc.invalidateQueries({ queryKey: ["products"] });
         toast.success("Foto agregada");
       } catch (err) {
@@ -152,6 +149,7 @@ function AdminProducts() {
       price: String(p.price),
       cost: p.cost != null ? String(p.cost) : "",
       category_id: p.category ? String(p.category.id) : "",
+      in_stock: p.in_stock,
     });
     setPending([]);
     setAsk([]);
@@ -197,10 +195,8 @@ function AdminProducts() {
         material: form.material.trim() !== "" ? form.material.trim() : null,
         price: Number(form.price),
         category_id: Number(form.category_id),
+        in_stock: form.in_stock,
       };
-      // Se trabaja por pedido: siempre disponible.
-      payload.stock = MADE_TO_ORDER_STOCK;
-      payload.in_stock = true;
       if (form.cost !== "") payload.cost = Number(form.cost);
       const saved = editing
         ? await updateProduct(editing.id, payload)
@@ -230,10 +226,6 @@ function AdminProducts() {
             ),
           );
       await setProductColors(saved.id, derivedColors);
-      // Se trabaja por pedido: cada color queda siempre disponible.
-      for (const color of derivedColors) {
-        await setColorStock(saved.id, color, MADE_TO_ORDER_STOCK);
-      }
 
       await qc.invalidateQueries({ queryKey: ["products"] });
       toast.success(editing ? "Producto actualizado" : "Producto creado");
@@ -407,6 +399,20 @@ function AdminProducts() {
                 </p>
               )}
             </div>
+            <label className="flex items-center justify-between gap-3 rounded-xl border border-border px-3 py-3">
+              <span>
+                <span className="block text-sm font-medium">
+                  {form.in_stock ? "Se puede pedir" : "Oculto del catálogo"}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  Apágalo si por ahora no lo haces. No hay inventario: se pide a demanda.
+                </span>
+              </span>
+              <Switch
+                checked={form.in_stock}
+                onCheckedChange={(v) => setForm({ ...form, in_stock: v })}
+              />
+            </label>
           </div>
 
           <div className="space-y-3">

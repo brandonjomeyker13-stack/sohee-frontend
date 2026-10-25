@@ -47,7 +47,7 @@ function Index() {
   const { data: categories } = useQuery({ queryKey: ["categories"], queryFn: getCategories });
 
   const filtered = useMemo(() => {
-    let list = data ?? [];
+    let list = (data ?? []).filter((p) => p.in_stock);
     if (categoryId) list = list.filter((p) => p.category?.id === categoryId);
     return fuzzyFilter(list, search, (p: Product) =>
       [

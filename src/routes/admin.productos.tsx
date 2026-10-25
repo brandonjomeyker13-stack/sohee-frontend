@@ -2,8 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { ImageOff, Pencil, Plus, Search, Trash2 } from "lucide-react";
-import { deleteProduct, formatCOP, getProducts, type Product } from "@/lib/api";
+import { Download, ImageOff, Pencil, Plus, Search, Trash2 } from "lucide-react";
+import { deleteProduct, exportCatalog, formatCOP, getProducts, type Product } from "@/lib/api";
 import { fuzzyFilter } from "@/lib/fuzzy";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,6 +27,7 @@ function AdminProductsList() {
     queryFn: () => getProducts(),
   });
   const [search, setSearch] = useState("");
+  const [exporting, setExporting] = useState(false);
 
   const filtered = useMemo(
     () => fuzzyFilter(products ?? [], search, (p: Product) => `${p.name} ${p.category?.name ?? ""}`),
@@ -44,6 +45,28 @@ function AdminProductsList() {
     }
     return Array.from(map.entries()).sort(([a], [b]) => a.localeCompare(b));
   }, [filtered]);
+
+  const downloadExport = async () => {
+    setExporting(true);
+    try {
+      const catalogo = await exportCatalog();
+      const blob = new Blob([JSON.stringify(catalogo, null, 2)], {
+        type: "application/json",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      const fecha = new Date().toISOString().slice(0, 10);
+      a.href = url;
+      a.download = `catalogo-sohee-${fecha}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success("Catálogo descargado");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "No se pudo exportar el catálogo");
+    } finally {
+      setExporting(false);
+    }
+  };
 
   const remove = async (p: Product) => {
     try {
@@ -68,12 +91,24 @@ function AdminProductsList() {
             aria-label="Buscar producto"
           />
         </div>
-        <Button asChild className="w-full shrink-0 sm:w-auto">
-          <Link to="/admin" search={{ editar: undefined }}>
-            <Plus className="h-4 w-4" />
-            Nuevo producto
-          </Link>
-        </Button>
+        <div className="flex w-full shrink-0 flex-col gap-2 sm:w-auto sm:flex-row">
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full sm:w-auto"
+            disabled={exporting}
+            onClick={() => void downloadExport()}
+          >
+            <Download className="h-4 w-4" />
+            {exporting ? "Exportando..." : "Exportar JSON"}
+          </Button>
+          <Button asChild className="w-full sm:w-auto">
+            <Link to="/admin" search={{ editar: undefined }}>
+              <Plus className="h-4 w-4" />
+              Nuevo producto
+            </Link>
+          </Button>
+        </div>
       </div>
 
       {isLoading ? (
@@ -116,6 +151,15 @@ function AdminProductsList() {
                       {formatCOP(p.price)} · {p.images?.length ?? 0} foto
                       {(p.images?.length ?? 0) === 1 ? "" : "s"}
                     </p>
+                    <span
+                      className={`mt-1 inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ${
+                        p.in_stock
+                          ? "bg-secondary text-foreground"
+                          : "bg-muted text-muted-foreground"
+                      }`}
+                    >
+                      {p.in_stock ? "Se puede pedir" : "Oculto"}
+                    </span>
                     {!!p.colors?.length && (
                       <div className="mt-1 flex flex-wrap gap-1.5">
                         {p.colors.map((c) => (

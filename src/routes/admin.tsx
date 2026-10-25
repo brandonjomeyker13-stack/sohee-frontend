@@ -17,7 +17,7 @@ export const Route = createFileRoute("/admin")({
       { title: "Panel de administración | Sohee" },
       {
         name: "description",
-        content: "Gestiona productos, imágenes, stock y pedidos de la tienda Sohee.",
+        content: "Gestiona productos, imágenes, disponibilidad y pedidos de la tienda Sohee.",
       },
       { property: "og:title", content: "Panel de administración | Sohee" },
       { property: "og:description", content: "Gestiona productos y pedidos de Sohee." },

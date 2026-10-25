@@ -11,7 +11,7 @@ export interface LegalDoc {
   sections: LegalSection[];
 }
 
-export const LEGAL_UPDATED = "29 de julio de 2026";
+export const LEGAL_UPDATED = "24 de octubre de 2026";
 
 export const TERMS: LegalDoc = {
   title: "Términos y Condiciones de Uso y Compra",
@@ -42,7 +42,7 @@ export const TERMS: LegalDoc = {
       title: "3. Productos y Precios",
       paragraphs: [
         "Los productos ofrecidos, sus características y precios se muestran en la plataforma al momento de la compra. Todos los precios están expresados en pesos colombianos (COP).",
-        "La disponibilidad de los productos está sujeta al stock real al momento de la compra. Si un producto se agota, la plataforma no permitirá completar la compra de esa unidad. Los precios pueden ser modificados sin previo aviso; sin embargo, el precio aplicable a cada compra será siempre el vigente y visible al momento en que el pedido fue confirmado y pagado.",
+        "Los productos se elaboran por pedido: no hay inventario ni reserva de unidades. Si un producto está oculto o no se puede pedir, la plataforma no permitirá completar esa compra. Los precios pueden ser modificados sin previo aviso; sin embargo, el precio aplicable a cada compra será siempre el vigente y visible al momento en que el pedido fue confirmado.",
       ],
     },
     {
@@ -51,7 +51,7 @@ export const TERMS: LegalDoc = {
       bullets: [
         "Registrarse en la plataforma (con correo y contraseña, o con su cuenta de Google) y aceptar estos Términos y la Política de Tratamiento de Datos.",
         "Seleccionar los productos deseados y agregarlos al carrito de compras.",
-        "Confirmar el pedido, momento en el cual se reserva el stock correspondiente.",
+        "Confirmar el pedido. Al confirmar se registra la solicitud de elaboración; no se reserva inventario.",
         "Completar el pago a través de la pasarela de pagos habilitada.",
       ],
     },
