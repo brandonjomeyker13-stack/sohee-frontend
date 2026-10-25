@@ -78,8 +78,6 @@ function AdminProducts() {
   /** Producto en edición con datos frescos del catálogo (para ver sus fotos por caja). */
   const editingFresh = editing ? (products?.find((p) => p.id === editing.id) ?? editing) : null;
   /** Colores que ya tiene el producto en edición (vienen de las fotos). */
-  const editColors = editingFresh?.colors ?? [];
-  const usaColores = editColors.length > 0;
 
   /** Avisa si ya existe otro producto con el mismo nombre, pero no bloquea. */
   const trimmedName = form.name.trim().toLowerCase();
@@ -211,20 +209,15 @@ function AdminProducts() {
       for (const [color, group] of groups) {
         await uploadProductImages(saved.id, group.slice(0, 10), color);
       }
-      // Los colores disponibles son los que ya tienen fotos.
-      const derivedColors = editingFresh
-        ? Array.from(
-            new Set(
-              (editingFresh.images ?? [])
-                .map((i) => i.color)
-                .filter((v): v is string => !!v),
-            ),
-          )
-        : Array.from(
-            new Set(
-              pending.map((p) => p.color).filter((v): v is string => !!v),
-            ),
-          );
+      // Los colores disponibles son solo los que ya tienen fotos.
+      const derivedColors = Array.from(
+        new Set(
+          [
+            ...(editingFresh?.images ?? []).map((i) => i.color),
+            ...pending.map((p) => p.color),
+          ].filter((v): v is string => !!v),
+        ),
+      );
       await setProductColors(saved.id, derivedColors);
 
       await qc.invalidateQueries({ queryKey: ["products"] });
@@ -240,6 +233,12 @@ function AdminProducts() {
   const changeImage = async (p: Product, fs: File[], color?: string | null) => {
     try {
       await uploadProductImages(p.id, fs.slice(0, 10), color ?? null);
+      const colors = Array.from(
+        new Set(
+          [...(p.images ?? []).map((i) => i.color), color].filter((v): v is string => !!v),
+        ),
+      );
+      await setProductColors(p.id, colors);
       await qc.invalidateQueries({ queryKey: ["products"] });
       toast.success(fs.length > 1 ? "Imágenes agregadas" : "Imagen agregada");
     } catch (err) {
@@ -250,6 +249,15 @@ function AdminProducts() {
   const removeImage = async (p: Product, imageId: number) => {
     try {
       await deleteProductImage(p.id, imageId);
+      const colors = Array.from(
+        new Set(
+          (p.images ?? [])
+            .filter((i) => i.id !== imageId)
+            .map((i) => i.color)
+            .filter((v): v is string => !!v),
+        ),
+      );
+      await setProductColors(p.id, colors);
       await qc.invalidateQueries({ queryKey: ["products"] });
       toast.success("Imagen eliminada");
     } catch (err) {
