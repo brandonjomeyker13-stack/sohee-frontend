@@ -28,6 +28,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { imagesFromClipboard, isTypingTarget } from "@/lib/clipboard-images";
 
 
 export const Route = createFileRoute("/admin/")({
@@ -94,6 +95,18 @@ function AdminProducts() {
     if (!imgs.length) return;
     setAsk((prev) => [...prev, ...imgs]);
   };
+
+  useEffect(() => {
+    const onPaste = (event: ClipboardEvent) => {
+      if (isTypingTarget(event.target)) return;
+      const imgs = imagesFromClipboard(event.clipboardData);
+      if (!imgs.length) return;
+      event.preventDefault();
+      addFiles(imgs);
+    };
+    window.addEventListener("paste", onPaste);
+    return () => window.removeEventListener("paste", onPaste);
+  }, []);
 
   /** Al elegir el color de una foto, la sube (o la deja en cola si el producto es nuevo). */
   const assignColor = (color: string | null) => {
@@ -277,9 +290,7 @@ function AdminProducts() {
         onSubmit={submit}
         className="card-surface h-fit space-y-4 p-5"
         onPaste={(e) => {
-          const imgs = Array.from(e.clipboardData?.files ?? []).filter((f) =>
-            f.type.startsWith("image/"),
-          );
+          const imgs = imagesFromClipboard(e.clipboardData);
           if (imgs.length) {
             e.preventDefault();
             addFiles(imgs);
@@ -459,9 +470,7 @@ function AdminProducts() {
                   addFiles(Array.from(e.dataTransfer.files));
                 }}
                 onPaste={(e) => {
-                  const imgs = Array.from(e.clipboardData.files).filter((f) =>
-                    f.type.startsWith("image/"),
-                  );
+                  const imgs = imagesFromClipboard(e.clipboardData);
                   if (imgs.length) {
                     e.preventDefault();
                     e.stopPropagation();
@@ -687,7 +696,7 @@ function PhotoBox({
       tabIndex={0}
       className="space-y-2 rounded-xl border border-border p-3 focus:outline-none focus:ring-1 focus:ring-ring"
       onPaste={(e) => {
-        const fs = Array.from(e.clipboardData?.files ?? []);
+        const fs = imagesFromClipboard(e.clipboardData);
         if (fs.length) {
           e.preventDefault();
           e.stopPropagation();
