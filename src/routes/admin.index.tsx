@@ -289,13 +289,6 @@ function AdminProducts() {
       <form
         onSubmit={submit}
         className="card-surface h-fit space-y-4 p-5"
-        onPaste={(e) => {
-          const imgs = imagesFromClipboard(e.clipboardData);
-          if (imgs.length) {
-            e.preventDefault();
-            addFiles(imgs);
-          }
-        }}
       >
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
           <h2 className="font-display text-lg font-bold">
@@ -468,14 +461,6 @@ function AdminProducts() {
                   e.preventDefault();
                   setDragging(false);
                   addFiles(Array.from(e.dataTransfer.files));
-                }}
-                onPaste={(e) => {
-                  const imgs = imagesFromClipboard(e.clipboardData);
-                  if (imgs.length) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    addFiles(imgs);
-                  }
                 }}
                 className={`flex cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed px-4 py-6 text-center transition-colors ${
                   dragging

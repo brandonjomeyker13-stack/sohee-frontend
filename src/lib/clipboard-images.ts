@@ -5,16 +5,8 @@ export function imagesFromClipboard(data: DataTransfer | null | undefined): File
     .filter((item) => item.kind === "file" && item.type.startsWith("image/"))
     .map((item) => item.getAsFile())
     .filter((file): file is File => !!file);
-  const fromFiles = Array.from(data.files ?? []).filter((file) => file.type.startsWith("image/"));
-  const seen = new Set<string>();
-  const out: File[] = [];
-  for (const file of [...fromItems, ...fromFiles]) {
-    const key = `${file.name}-${file.size}-${file.lastModified}`;
-    if (seen.has(key)) continue;
-    seen.add(key);
-    out.push(file);
-  }
-  return out;
+  if (fromItems.length) return fromItems;
+  return Array.from(data.files ?? []).filter((file) => file.type.startsWith("image/"));
 }
 
 export function isTypingTarget(target: EventTarget | null) {
